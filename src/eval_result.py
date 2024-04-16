@@ -37,8 +37,8 @@ def get_metrics(DATA_PATH:str, RESULT_PATH:str, year, model_name, is_rag, metric
     metrics_dic["accuracy"] = acc
     return metrics_dic
  
-def output_metrics(DATA_PATH: str, 
-         RESULT_PATH: str, 
+def output_metrics(data_path: str, 
+         result_path: str, 
          year_set: list | set | tuple, 
          model_name: str, 
          is_rag: bool
@@ -46,10 +46,10 @@ def output_metrics(DATA_PATH: str,
     eval_df = pd.DataFrame(index=["accuracy", "precision", "recall", "f1-score", "support"])    
     for year in year_set:
         metrics_dic = {}
-        metrics_dic = get_metrics(DATA_PATH, RESULT_PATH, year, model_name, is_rag)
+        metrics_dic = get_metrics(data_path, result_path, year, model_name, is_rag)
         eval_df[year] = metrics_dic
     eval_df = eval_df.T
-    eval_df.to_csv(f"{RESULT_PATH}/csv/summary_{model_name}_rag_{is_rag}.csv")
+    eval_df.to_csv(f"{result_path}/csv/summary_{model_name}_rag_{is_rag}.csv")
     return None
 
 #if __name__ == "__main__":

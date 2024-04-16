@@ -29,7 +29,9 @@ def mk_chromadb(PDF_PATH:str="./reports"):
         loader = PyPDFLoader(f["path"])
         pages = loader.load()
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000, chunk_overlap=0, separators=[" ", ",", "\n"] # [todo] optimize the separators for Japanese
+            chunk_size=1000, chunk_overlap=0, 
+            separators=[" ", ",", "\n"] # [todo] optimize the separators for Japanese
+            #separators=["第", "."]
         )
         texts = text_splitter.split_documents(pages)
         db_tmp = Chroma.from_documents(texts, embeddings, persist_directory=f"./vectorstore_agents/{f['name']}")

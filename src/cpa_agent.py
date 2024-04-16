@@ -1,7 +1,5 @@
 import pandas  as pd
 from datetime import datetime
-
-
 import openai
 from langchain.agents import initialize_agent
 from langchain.agents import AgentType
@@ -81,7 +79,8 @@ class CpaAgent:
               messages=[
                     #{"role": "system", "content": ""},
                     {"role": "user", "content": query},
-                ]
+                ],
+              temperature=0
               )
 
             result = response['choices'][0]['message']['content']
