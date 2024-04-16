@@ -41,6 +41,17 @@ def gen_questions(**kwargs):
     yield f"{q_dic['question']}\n{q_dic[s]}", a
 
 def calc_token_tiktoken(chat, model_name):
+    """calc_token_tiktoken function
+
+    This function calculates the number of tokens in the chat.
+
+    Args:
+        chat(str): chat history
+        model_name(str): model name
+
+    Returns:
+        num_tokens(int): number of tokens
+    """
     encoding = tiktoken.encoding_for_model(model_name)
     num_tokens = len(encoding.encode(chat))
     return num_tokens
