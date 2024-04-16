@@ -1,9 +1,6 @@
-
 import os
 import getpass
 import openai
-
-
 
 def openai_auth():
     print("This code requires openai API key.")

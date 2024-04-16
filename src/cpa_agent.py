@@ -9,6 +9,19 @@ from pdf2chroma import load_chromadb
 from util import gen_questions, calc_token_tiktoken
 
 class CpaAgent:
+  """CpaAgent
+
+  This class is a CPA agent which is used to generate questions and answers for the CPA exam.
+
+  Attributes:
+      pre_prompt(str): prompt which is given before the question
+      post_prompt(str): prompt which is given after the question
+      DATA_PATH(str): path to the folder where the cpa data is stored
+      RAG_PATH(str): path to the folder where the chroma db is stored
+      RESULT_PATH(str): path to the folder where the result is stored
+      agent: agent which is used to generate questions and answers
+      df_cpa: dataframe which contains the cpa data
+  """
   def __init__(self, 
                data_path:str, # path to the folder where the cpa data is stored
                rag_path:str, # path to the folder where the chroma db is stored
@@ -31,8 +44,16 @@ class CpaAgent:
 
   def _set_agent(self, 
                  main_model_name:str, 
-                 sub_model_name
+                 sub_model_name:str
                  ) -> None:
+    """_set_agent
+
+    This function sets the agent which is used to generate questions and answers.
+
+    Args:
+        main_model_name(str): main model name
+        sub_model_name(str): sub model name
+    """
     #sub agent
     #make chromadb(self.RAG_PATH)
     tools = load_chromadb(self.RAG_PATH, sub_model_name)

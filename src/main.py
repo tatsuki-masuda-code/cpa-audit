@@ -12,8 +12,7 @@ if __name__ == "__main__":
     check_openai_api_key()
     mk_chromadb()
     for main_model_name in ["gpt-3.5-turbo-0125", "gpt-4-turbo-2024-04-09"]:
-        pass
-        for is_rag in [False, True]:
+        for is_rag in [False, True]: 
             cpa = CpaAgent(data_path="./data", rag_path="./vectorstore_agents", result_path="./result")
             cpa.start(year_set=year_ls, main_model_name=main_model_name, is_rag=is_rag, sub_model_name=sub_model_name)
-            output_metrics(DATA_PATH="./data",RESULT_PATH="./result", year_set=year_ls, model_name="gpt-3.5-turbo-0125", is_rag=is_rag)
+            output_metrics(data_path="./data",result_path="./result", year_set=year_ls, model_name=main_model_name, is_rag=is_rag)
