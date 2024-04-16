@@ -11,7 +11,7 @@ if __name__ == "__main__":
     openai_auth()
     check_openai_api_key()
     mk_chromadb()
-    for main_model_name in ["gpt-3.5-turbo-0125", "gpt-4-turbo"]:
+    for main_model_name in ["gpt-3.5-turbo-0125", "gpt-4-turbo-2024-04-09"]:
         pass
         for is_rag in [False, True]:
             cpa = CpaAgent(data_path="./data", rag_path="./vectorstore_agents", result_path="./result")
