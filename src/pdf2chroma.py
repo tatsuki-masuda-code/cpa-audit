@@ -37,12 +37,15 @@ def mk_chromadb(PDF_PATH:str="./reports"):
         db_tmp = Chroma.from_documents(texts, embeddings, persist_directory=f"./vectorstore_agents/{f['name']}")
         db_tmp.persist()
 
-def load_chromadb(PDF_PATH:str="./reports", model_name:str="gpt-3.5-turbo-16k"):
+def load_chromadb(PDF_PATH:str, model_name:str, max_tokens:int):
     """load_chromadb function
 
     This function loads the Chroma database from the vectorstore_agents directory.
     
     Args:
+        PDF_PATH(str): path to the PDF files.
+        model_name(str): model name.
+        max_tokens(int): maximum number of tokens. 
 
     Returns:
         dbs(list): list of Chroma databases.
@@ -60,7 +63,7 @@ def load_chromadb(PDF_PATH:str="./reports", model_name:str="gpt-3.5-turbo-16k"):
     llm = ChatOpenAI(
         temperature=0,
         model=model_name
-        ,max_tokens=100
+        ,max_tokens=max_tokens
     )
 
     tools = []

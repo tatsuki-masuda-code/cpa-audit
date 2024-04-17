@@ -56,21 +56,21 @@ class CpaAgent:
     """
     #sub agent
     #make chromadb(self.RAG_PATH)
-    tools = load_chromadb(self.RAG_PATH, sub_model_name)
+    tools = load_chromadb(self.RAG_PATH, sub_model_name, max_tokens=100)
 
     #main agent
     llm = ChatOpenAI(
         temperature=0,
-        model= main_model_name,
-        max_tokens=500
+        model= main_model_name
+        ,max_tokens=500
     )
 
     self.agent = initialize_agent(
         agent=AgentType.OPENAI_FUNCTIONS,
         tools=tools,
         llm=llm,
-        verbose=False,
-        max_tokens=500
+        verbose=False
+        ,max_tokens=500
     )
     return None
   

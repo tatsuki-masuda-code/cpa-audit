@@ -4,7 +4,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
 
 # [todo] merge these two similar functions into one
-def  load_df(RESULT_PATH:str, year:str, model_name:str, is_rag:bool)->pd.DataFrame:
+def load_df(RESULT_PATH:str, year:str, model_name:str, is_rag:bool)->pd.DataFrame:
     df_res = pd.read_csv(f"{RESULT_PATH}/csv/{year}_{model_name}_rag_{is_rag}.csv")
     return df_res
 
