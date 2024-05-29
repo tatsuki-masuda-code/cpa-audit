@@ -1,17 +1,13 @@
 import pandas  as pd
 from datetime import datetime
-import openai
-from langchain.agents import initialize_agent
-from langchain.agents import AgentType
-from langchain.chat_models import ChatOpenAI
 
-from pdf2chroma import load_chromadb
+from agents import GPTAgent, RAGAgent
 from util import gen_questions, calc_token_tiktoken
 
-class CpaAgent:
-  """CpaAgent
+class CpaTest:
+  """CpaTest
 
-  This class is a CPA agent which is used to generate questions and answers for the CPA exam.
+  This class is a CPA test class which is used to generate questions and answers for the CPA exam.
 
   Attributes:
       DATA_PATH(str): path to the folder where the cpa data is stored
@@ -48,39 +44,12 @@ class CpaAgent:
     df_cpa = df_cpa[df_cpa["abnormal_flg"]==0]
     return df_cpa.copy()
 
-  def _set_agent(self,
-                 main_model_name:str,
-                 sub_model_name:str
-                 ) -> None:
-    """_set_agent
+  def _set_agent(self, is_rag, main_model_name, sub_model_name)->None:
+    if not is_rag:
+      self.agent = GPTAgent(main_model_name, self.SYSTEM_PROMPT)
+    else:
+      self.agent = RAGAgent(main_model_name, sub_model_name, self.MAX_TOKENS, self.RAG_PATH)
 
-    This function sets the agent which is used to generate questions and answers.
-
-    Args:
-        main_model_name(str): main model name
-        sub_model_name(str): sub model name
-    """
-    #sub agent
-    #make chromadb(self.RAG_PATH)
-    tools = load_chromadb(self.RAG_PATH,
-                          sub_model_name,
-                          max_tokens=self.MAX_TOKENS)
-
-    #main agent
-    llm = ChatOpenAI(
-        temperature=0,
-        model= main_model_name,
-        max_tokens=self.MAX_TOKENS
-    )
-
-    self.agent = initialize_agent(
-        agent=AgentType.OPENAI_FUNCTIONS,
-        tools=tools,
-        llm=llm,
-        verbose=False,
-        max_tokens=self.MAX_TOKENS
-    )
-    return None
 
   def _infer(self,
              df:pd.DataFrame,
@@ -107,19 +76,7 @@ class CpaAgent:
         query = self.PRE_PROMPT + q + self.POST_PROMPT
         logger.write(query)
         try:
-          if not is_rag:
-            response = openai.ChatCompletion.create(
-              model=model_name,
-              messages=[
-                    {"role": "system", "content": self.SYSTEM_PROMPT},
-                    {"role": "user", "content": query},
-                ],
-              temperature=0
-              )
-
-            result = response['choices'][0]['message']['content']
-          else:
-            result = self.agent.run({"input": query})
+          result = self.agent.run({"input": query})
           ls_res.append(result)
         except Exception as e:
           logger.write(str(e))
@@ -139,8 +96,7 @@ class CpaAgent:
             sub_model_name:str
             )->None:
     self.df_cpa = self._load_df()
-    if is_rag:
-      self._set_agent(main_model_name, sub_model_name)
+    self._set_agent(main_model_name, sub_model_name)
     for year in year_set:
       self._infer(self.df_cpa, year, main_model_name, is_rag)
 
