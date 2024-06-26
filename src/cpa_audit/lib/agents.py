@@ -1,25 +1,30 @@
+from logging import getLogger
+logger = getLogger(__name__)
+
 import openai
 from langchain.agents import initialize_agent
 from langchain.agents import AgentType
 from langchain.chat_models import ChatOpenAI
 
-from pdf2chroma import load_chromadb
+from .pdf2chroma import load_chromadb
+from logging import getLogger
+logger = getLogger(__name__)
 
 class GPTAgent():
-  def __init__(self, model_name:str, system_prompt:str):
-    self.model_name = model_name
+  def __init__(self, main_model_name:str, system_prompt:str):
+    self.main_model_name = main_model_name
     self.system_prompt = system_prompt
 
   def run(self, query:str)->str:
+    string_type  = type(query)
     response = openai.ChatCompletion.create(
-      model=self.model_name,
+      model=self.main_model_name,
       messages=[
             {"role": "system", "content": self.system_prompt},
-            {"role": "user", "content": query},
+            {"role": "user", "content": query}
         ],
       temperature=0
       )
-
     return response['choices'][0]['message']['content']
 
 class RAGAgent():

@@ -1,3 +1,5 @@
 #!/bin/bash
-pip install -q -r requirements.txt
-python3 ./src/main.py
+export PATH=$PATH:$HOME/.local/bin
+pip3 install -qr requirements.txt
+pip3 install -qe .
+cpa-audit
