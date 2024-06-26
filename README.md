@@ -1,7 +1,7 @@
-パブリックにしていますが、現時点で公開する予定はありません。
+パブリックにしていますが、現時点で公式に公開する予定はありません。
 
-```
+```sh
 git clone https://github.com/tatsuki-masuda-code/cpa-audit#main
-cd ~/hogehoge/cpa-audit
-./main.sh
+docker compose up -d
+docker compose exec test sh main.sh
 ```
