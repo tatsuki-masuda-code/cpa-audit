@@ -2,3 +2,4 @@
 vectorstore_agents/
 log/*
 src/cpa_audit.egg-info/
+models/*

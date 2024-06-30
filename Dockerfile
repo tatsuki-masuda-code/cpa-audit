@@ -26,4 +26,4 @@ pip3 install --no-cache-dir -r ${HOME}/requirements.txt
 
 USER $USERNAME
 
-CMD [ "/bin/bash"]
+CMD [ "/bin/bash", "main.sh"]

@@ -7,8 +7,8 @@ import pandas as pd
 def gen_questions_jcpa (**kwargs):
   """mk_question function
 
-    Generate questions given in the dictionary format into a string prompt.  
-    This follows real j-cpa exam format which consists of 4 sentences with 6 choices. 
+    Generate questions given in the dictionary format into a string prompt.
+    This follows real j-cpa exam format which consists of 4 sentences with 6 choices.
 
     Args:
         kwargs(Dict): question dictionary. its key must contain question, ア, イ, ウ, エ, 1, 2, 3, 4, 5 and 6.

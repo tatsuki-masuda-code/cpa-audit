@@ -5,18 +5,29 @@ import openai
 from langchain.agents import initialize_agent
 from langchain.agents import AgentType
 from langchain.chat_models import ChatOpenAI
+from llama_cpp import Llama
+from pydantic import BaseModel
 
 from .pdf2chroma import load_chromadb
-from logging import getLogger
-logger = getLogger(__name__)
 
-class GPTAgent():
+class BaseAgent(BaseModel):
+  system_prompt:str=None
+  agent:object=None
+  agent_type:str
+
+  def run(self, query:str)->str:
+    raise NotImplementedError
+
+
+class GPTAgent(BaseAgent):
+  agent_type="gpt"
+
   def __init__(self, main_model_name:str, system_prompt:str):
+    super().__init__()
     self.main_model_name = main_model_name
     self.system_prompt = system_prompt
 
   def run(self, query:str)->str:
-    string_type  = type(query)
     response = openai.ChatCompletion.create(
       model=self.main_model_name,
       messages=[
@@ -27,8 +38,34 @@ class GPTAgent():
       )
     return response['choices'][0]['message']['content']
 
-class RAGAgent():
-  def __init__(self, main_model_name:str, sub_model_name:str, max_tokens:int, rag_path):
+class LlamaAgent(BaseAgent):
+  agent_type="llama"
+  def __init__(self, model_path:str, main_model_name:str, system_prompt:str):
+    super().__init__()
+    self.system_prompt = system_prompt
+    self.agent = Llama(
+              model_path=model_path + "/" + main_model_name + '/ggml-model-Q4_K_M-v2.gguf',
+              chat_format = "llama-2",
+              seed=0,
+              verbose=False
+    )
+
+  def run(self, query:str)->str:
+    response = self.agent.create_chat_completion(
+      messages=[
+        {"role": "system", "content": self.system_prompt},
+        {"role": "user", "content": query}
+      ],
+      seed=0,
+      temperature=0
+    )
+    return response['choices'][0]['message']['content']
+
+class GPTRagAgent(BaseAgent):
+  agent_type="gpt"
+  def __init__(self, main_model_name:str, sub_model_name:str, system_prompt:str, max_tokens:int, rag_path):
+    super().__init__()
+    self.system_prompt = system_prompt
     tools = load_chromadb(rag_path,
                           sub_model_name,
                           max_tokens=max_tokens)
@@ -49,4 +86,10 @@ class RAGAgent():
     )
 
   def run(self, query:str)->str:
-    self.agent.run({"input": query})
+    return self.agent.run({"input": self.system_prompt + query})
+
+class LlamaRagAgent(BaseAgent):
+  agent_type="llama"
+  def __init__(*args, **kwargs):
+    super().__init__()
+    pass
