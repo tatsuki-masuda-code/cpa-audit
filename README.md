@@ -2,6 +2,5 @@
 
 ```sh
 git clone https://github.com/tatsuki-masuda-code/cpa-audit#main
-docker compose up -d
-docker compose exec test sh main.sh
+docker compose run -e OPENAI_API_KEY="sk-..." test
 ```
