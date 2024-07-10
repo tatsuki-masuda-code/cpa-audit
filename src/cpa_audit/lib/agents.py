@@ -11,9 +11,10 @@ from pydantic import BaseModel
 from .pdf2chroma import load_chromadb
 
 class BaseAgent(BaseModel):
+  agent_type:str
   system_prompt:str=None
   agent:object=None
-  agent_type:str
+  main_model_name:str=None
 
   def run(self, query:str)->str:
     raise NotImplementedError
