@@ -25,8 +25,8 @@ class GPTAgent(BaseAgent):
     self.main_model_name = main_model_name
     self.system_prompt = system_prompt
 
-  def run(self, query:str)->str:
-    response = openai.ChatCompletion.create(
+  async def run(self, query:str)->str:
+    response = await openai.ChatCompletion.acreate(
       model=self.main_model_name,
       messages=[
             {"role": "system", "content": self.system_prompt},

@@ -1,6 +1,7 @@
 from logging import getLogger
 logger = getLogger(__name__)
 
+import asyncio
 import pandas  as pd
 from datetime import datetime
 
@@ -54,7 +55,7 @@ class CpaTest:
       else:
         self.agent = LlamaRagAgent(model_path, main_model_name, sub_model_name, self.MAX_TOKENS, self.RAG_PATH)
 
-  def _infer(self,
+  async def _infer(self,
              df:pd.DataFrame,
              subject:str,
              year:str,
@@ -67,7 +68,7 @@ class CpaTest:
     ls_res = []
     ls_ans = []
     cum_token = 0
-    logger.info(f"start the inference for model: subject:{subject}, {model_name}, year:{year}, rag:{is_rag}...")
+    logger.info(f"start the inference for model: subject:{subject}, model:{model_name}, year:{year}, rag:{is_rag}...")
     log_file = open(f"{self.RESULT_PATH}/log/{subject}_{year}_{model_name}_rag_{str(is_rag)}.txt", "w", encoding='UTF-8')
     log_file.write(f"model:{model_name}\n")
     log_file.write(f"year:{year}\n")
@@ -83,7 +84,7 @@ class CpaTest:
         query = self.PRE_QUESTION + q + self.POST_QUESTION
         log_file.write(query)
         try:
-          result = self.agent.run(query)
+          result = await self.agent.run(query)
           ls_res.append(result)
           ls_ans.append(a)
         except NotImplementedError as e:
@@ -107,7 +108,7 @@ class CpaTest:
     log_file.close()
     logger.info(f"Finish the inference for model:subject:{subject}, model:{model_name}, year:{year}, rag:{is_rag}!")
 
-  def inference(self,
+  async def inference(self,
             subject,
             year_set:list | set | tuple,
             main_model_name:str,
@@ -119,6 +120,7 @@ class CpaTest:
       raise ValueError("RAG path is not specified at the initialization of the class.")
     self.df_cpa = load_qdata(self.DATA_PATH, subject)
     self._set_agent(llama_model_path, main_model_name, sub_model_name, is_rag)
+    task_ls = []
     for year in year_set:
-      self._infer(self.df_cpa, subject, year, main_model_name, is_rag)
-
+      task_ls.append(asyncio.create_task(self._infer(self.df_cpa, subject, year, main_model_name, is_rag)))
+    await asyncio.gather(*task_ls)
