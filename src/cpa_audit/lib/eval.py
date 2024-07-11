@@ -31,7 +31,9 @@ def get_metrics(RESULT_PATH:str,
         set: metrics_dic
     """
     df_res = pd.read_csv(f"{RESULT_PATH}/csv/{subject}_{year}_{model_name}_rag_{is_rag}.csv")
-    df_res = df_res[df_res["result"].astype(str).isin(["True", "False"])]
+    df_res["result"] = df_res["result"].astype(str)
+    df_res["answer"] = df_res["answer"].astype(str)
+    df_res = df_res[df_res["result"].isin(["True", "False"])] # remove the rows which are not answered in True or False
     class_report_dic = classification_report(df_res["answer"], df_res["result"], output_dict=True)
     acc = class_report_dic["accuracy"]
     metrics_dic = {"accuracy":acc, **class_report_dic[metrics_name]}
