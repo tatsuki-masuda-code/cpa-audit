@@ -1,15 +1,7 @@
 from logging import getLogger
 logger = getLogger(__name__)
 import os
-from tqdm import tqdm
 
-from langchain.agents import Tool
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.chat_models import ChatOpenAI
-from langchain.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.chains import RetrievalQA
 def mk_chromadb(PDF_PATH:str="./reports",
                 chunk_size:int=1000,
                 chunk_overlap:int=0,
@@ -25,6 +17,12 @@ def mk_chromadb(PDF_PATH:str="./reports",
     Returns:
         None
     """
+    from tqdm import tqdm
+    from langchain.embeddings.openai import OpenAIEmbeddings
+    from langchain.vectorstores import Chroma
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    from langchain.document_loaders import PyPDFLoader
+
     pdf_files = [{"name":f[:-4], "path":f"{PDF_PATH}/{f}"} for f in os.listdir(PDF_PATH)]
 
 
@@ -51,11 +49,18 @@ def load_chromadb(PDF_PATH:str, model_name:str, max_tokens:int):
     Args:
         PDF_PATH(str): path to the PDF files.
         model_name(str): model name.
-        max_tokens(int): maximum number of tokens. 
+        max_tokens(int): maximum number of tokens.
 
     Returns:
         dbs(list): list of Chroma databases.
     """
+    from tqdm import tqdm
+    from langchain.embeddings.openai import OpenAIEmbeddings
+    from langchain.vectorstores import Chroma
+    from langchain.agents import Tool
+    from langchain.chat_models import ChatOpenAI
+    from langchain.chains import RetrievalQA
+
 
     PDF_PATH = f"./reports"
     pdf_files = [{"name":f[:-4], "path":f"{PDF_PATH}/{f}"} for f in os.listdir(PDF_PATH)]
@@ -74,7 +79,7 @@ def load_chromadb(PDF_PATH:str, model_name:str, max_tokens:int):
 
     tools = []
     for i, f in tqdm(enumerate(pdf_files), total=len(pdf_files)):
-        db_tmp=Chroma(persist_directory=f"./vectorstore_agents/{f['name']}", 
+        db_tmp=Chroma(persist_directory=f"./vectorstore_agents/{f['name']}",
                       embedding_function=embeddings
                       )
         file_name = f["name"].translate(num_converter)

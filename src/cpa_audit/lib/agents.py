@@ -2,9 +2,6 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 import openai
-from langchain.agents import initialize_agent
-from langchain.agents import AgentType
-from langchain.chat_models import ChatOpenAI
 from llama_cpp import Llama
 from pydantic import BaseModel
 
@@ -35,7 +32,8 @@ class GPTAgent(BaseAgent):
             {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": query}
         ],
-      temperature=0
+      temperature=0,
+      seed=0
       )
     return response['choices'][0]['message']['content']
 
@@ -66,6 +64,11 @@ class GPTRagAgent(BaseAgent):
   agent_type="gpt"
   def __init__(self, main_model_name:str, sub_model_name:str, system_prompt:str, max_tokens:int, rag_path):
     super().__init__()
+    from langchain.agents import initialize_agent
+    from langchain.agents import AgentType
+    from langchain.chat_models import ChatOpenAI
+
+    DeprecationWarning("This class is deprecated. Use GPTAgent instead.")
     self.system_prompt = system_prompt
     tools = load_chromadb(rag_path,
                           sub_model_name,

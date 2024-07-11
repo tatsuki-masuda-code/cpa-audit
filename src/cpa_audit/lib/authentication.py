@@ -6,6 +6,7 @@ import getpass
 import openai
 from logging import getLogger
 logger = getLogger(__name__)
+
 def openai_auth():
     if "OPENAI_API_KEY" in os.environ:
         logger.info("Openai API key is already set.")
