@@ -2,18 +2,16 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 import openai
-from langchain.agents import initialize_agent
-from langchain.agents import AgentType
-from langchain.chat_models import ChatOpenAI
 from llama_cpp import Llama
 from pydantic import BaseModel
 
 from .pdf2chroma import load_chromadb
 
 class BaseAgent(BaseModel):
+  agent_type:str
   system_prompt:str=None
   agent:object=None
-  agent_type:str
+  main_model_name:str=None
 
   def run(self, query:str)->str:
     raise NotImplementedError
@@ -27,14 +25,15 @@ class GPTAgent(BaseAgent):
     self.main_model_name = main_model_name
     self.system_prompt = system_prompt
 
-  def run(self, query:str)->str:
-    response = openai.ChatCompletion.create(
+  async def run(self, query:str)->str:
+    response = await openai.ChatCompletion.acreate(
       model=self.main_model_name,
       messages=[
             {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": query}
         ],
-      temperature=0
+      temperature=0,
+      seed=0
       )
     return response['choices'][0]['message']['content']
 
@@ -50,7 +49,7 @@ class LlamaAgent(BaseAgent):
               verbose=False
     )
 
-  def run(self, query:str)->str:
+  async def run(self, query:str)->str:
     response = self.agent.create_chat_completion(
       messages=[
         {"role": "system", "content": self.system_prompt},
@@ -65,6 +64,11 @@ class GPTRagAgent(BaseAgent):
   agent_type="gpt"
   def __init__(self, main_model_name:str, sub_model_name:str, system_prompt:str, max_tokens:int, rag_path):
     super().__init__()
+    from langchain.agents import initialize_agent
+    from langchain.agents import AgentType
+    from langchain.chat_models import ChatOpenAI
+
+    DeprecationWarning("This class is deprecated. Use GPTAgent instead.")
     self.system_prompt = system_prompt
     tools = load_chromadb(rag_path,
                           sub_model_name,
