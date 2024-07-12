@@ -49,7 +49,7 @@ class LlamaAgent(BaseAgent):
               verbose=False
     )
 
-  def run(self, query:str)->str:
+  async def run(self, query:str)->str:
     response = self.agent.create_chat_completion(
       messages=[
         {"role": "system", "content": self.system_prompt},
