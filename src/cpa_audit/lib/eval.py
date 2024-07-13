@@ -2,10 +2,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 import pandas as pd
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import classification_report
-
-from .util import load_qdata
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_recall_fscore_support
 
 def get_metrics(RESULT_PATH:str,
                 subject:str,
@@ -34,9 +31,19 @@ def get_metrics(RESULT_PATH:str,
     df_res["result"] = df_res["result"].astype(str)
     df_res["answer"] = df_res["answer"].astype(str)
     df_res = df_res[df_res["result"].isin(["True", "False"])] # remove the rows which are not answered in True or False
-    class_report_dic = classification_report(df_res["answer"], df_res["result"], output_dict=True)
-    acc = class_report_dic["accuracy"]
-    metrics_dic = {"accuracy":acc, **class_report_dic[metrics_name]}
+    acc = accuracy_score(df_res["answer"], df_res["result"])
+    tn, fp, fn, tp = confusion_matrix(df_res["answer"],
+                          df_res["result"],
+                          labels=["False", "True"]
+                          ).flatten()
+    pre, rec, f1, _= precision_recall_fscore_support(df_res["answer"],
+                                           df_res["result"],
+                                           beta=1,
+                                           labels=["False", "True"],
+                                           pos_label="True",
+                                           average="binary")
+    sup = len(df_res)
+    metrics_dic = {"TN":tn, "FP":fp, "FN":fn, "TP":tp, "accuracy":acc, "precision":pre, "recall":rec, "f1-score":f1, "support":sup}
     return metrics_dic
 
 def output_metrics(result_path: str,
@@ -61,6 +68,6 @@ def output_metrics(result_path: str,
         {"model_name": model_name, "year":year, **get_metrics(result_path, subject, year, model_name, is_rag)}
         for model_name in model_ls for year in year_set
     ]
-    eval_df = pd.DataFrame(metrics_list).reindex(columns=["model_name", "year", "accuracy", "precision", "recall", "f1-score", "support"])
+    eval_df = pd.DataFrame(metrics_list).reindex(columns=["model_name", "year", "TN", "FP", "FN", "TP", "accuracy", "precision", "recall", "f1-score", "support"])
     eval_df.to_csv(f"{result_path}/summary/summary_{subject}_rag_{is_rag}.csv")
     return eval_df
