@@ -1,5 +1,5 @@
 **__pycache__**
 vectorstore_agents/
 log/*
-src/cpa_audit.egg-info/
+**.egg-info/
 models/*
