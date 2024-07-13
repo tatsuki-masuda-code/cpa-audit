@@ -18,10 +18,10 @@ class BaseAgent(BaseModel):
 
 
 class GPTAgent(BaseAgent):
-  agent_type="gpt"
 
   def __init__(self, main_model_name:str, system_prompt:str):
     super().__init__()
+    self.agent_type="gpt"
     self.main_model_name = main_model_name
     self.system_prompt = system_prompt
 
@@ -38,9 +38,9 @@ class GPTAgent(BaseAgent):
     return response['choices'][0]['message']['content']
 
 class LlamaAgent(BaseAgent):
-  agent_type="llama"
   def __init__(self, model_path:str, main_model_name:str, system_prompt:str):
     super().__init__()
+    self.agent_type="llama"
     self.system_prompt = system_prompt
     self.agent = Llama(
               model_path=model_path + "/" + main_model_name + '/ggml-model-Q4_K_M-v2.gguf',
@@ -61,9 +61,9 @@ class LlamaAgent(BaseAgent):
     return response['choices'][0]['message']['content']
 
 class GPTRagAgent(BaseAgent):
-  agent_type="gpt"
   def __init__(self, main_model_name:str, sub_model_name:str, system_prompt:str, max_tokens:int, rag_path):
     super().__init__()
+    self.agent_type="gpt"
     from langchain.agents import initialize_agent
     from langchain.agents import AgentType
     from langchain.chat_models import ChatOpenAI
@@ -93,7 +93,7 @@ class GPTRagAgent(BaseAgent):
     return self.agent.run({"input": self.system_prompt + query})
 
 class LlamaRagAgent(BaseAgent):
-  agent_type="llama"
-  def __init__(*args, **kwargs):
+  def __init__(self, *args, **kwargs):
     super().__init__()
+    self.agent_type="llama"
     pass
