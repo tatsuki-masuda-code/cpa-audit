@@ -14,7 +14,7 @@ __all__=[
     "mk_chromadb",
     "CpaTest",
     "GPTAgent",
-    "RAGAgent",
+    "LlamaAgent",
     "output_metrics",
 ]
 
