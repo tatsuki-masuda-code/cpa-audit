@@ -37,7 +37,6 @@ def main():
     for is_rag in is_rag_ls:
         for subject in subject_ls:
             for main_model_name in model_ls:
-                """
                 task = asyncio.run(
                     cpa.inference(subject=subject,
                                 year_set=year_ls[subject],
@@ -47,7 +46,6 @@ def main():
                                 #sub_model_name=sub_model_name
                                 )
                 )
-                """
             output_metrics(result_path="./result",
                 subject=subject,
                 year_set=year_ls[subject],
